@@ -1,0 +1,12 @@
+# Data files (contain contractor credentials and local passwords)
+database.json
+contractors_accounts.csv
+.env
+
+# Python caching
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Log files
+*.log
