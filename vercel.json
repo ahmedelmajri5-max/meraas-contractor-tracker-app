@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/**/*.py",
+      "src": "api/index.py",
       "use": "@vercel/python"
     },
     {
@@ -12,12 +12,8 @@
   ],
   "routes": [
     {
-      "src": "/api/contractors/map",
-      "dest": "api/contractors/map.py"
-    },
-    {
       "src": "/api/(.*)",
-      "dest": "api/$1.py"
+      "dest": "api/index.py"
     },
     {
       "src": "/(.+\\.(css|js|png|jpg|jpeg|gif|svg|ico|webp))",
