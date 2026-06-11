@@ -15,7 +15,7 @@ from datetime import datetime
 import threading
 
 PORT = 8000
-DB_FILE = "database.json"
+DB_FILE = os.environ.get("DB_FILE") or ("/tmp/database.json" if os.environ.get("VERCEL") else "database.json")
 odoo_lock = threading.Lock()
 
 # ─── ODOO CONFIG ──────────────────────────────────────────────────────────────
