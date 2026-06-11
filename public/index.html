@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منظومة متابعة المقاولين - شركة ميراس (MERAAS)</title>
+    <!-- Google Fonts - Cairo & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Main Style -->
+    <link rel="stylesheet" href="/css/style.css?v=1.7">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dark-theme">
+
+    <!-- ─── LOGIN SCREEN ────────────────────────────────────────────────────── -->
+    <div id="login-screen" class="login-wrapper">
+        <div class="login-card glass-panel animate-fade-in">
+            <div class="login-header">
+                <img src="/logo.png" alt="MERAAS Logo" class="login-logo">
+                <h2>شركة ميراس للـمـقـاولات</h2>
+                <p>منظومة تتبع أوامر العمل والمستحقات للمتعهدين</p>
+            </div>
+            
+            <div id="auth-error" class="alert-box alert-danger hidden"></div>
+            
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="email"><i class="fa-regular fa-envelope"></i> البريد الإلكتروني</label>
+                    <input type="email" id="email" placeholder="example@odoo.com" required autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label for="password"><i class="fa-solid fa-lock"></i> كلمة المرور</label>
+                    <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block"><i class="fa-solid fa-right-to-bracket"></i> تسجيل الدخول</button>
+            </form>
+
+            <div class="auth-toggle">
+                <p>مستخدم جديد؟ <a href="#" id="toggle-register">سجل كلمة مرور لبريدك المعتمد</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── REGISTER SCREEN (SETUP PASSWORD) ────────────────────────────────── -->
+    <div id="register-screen" class="login-wrapper hidden">
+        <div class="login-card glass-panel">
+            <div class="login-header">
+                <h2>إنشاء حساب متعهد جديد</h2>
+                <p>قم بتعيين كلمة مرور للبريد الإلكتروني المعتمد الخاص بك في Odoo</p>
+            </div>
+            <div id="register-error" class="alert-box alert-danger hidden"></div>
+            <div id="register-success" class="alert-box alert-success hidden"></div>
+            
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="reg-email"><i class="fa-regular fa-envelope"></i> البريد الإلكتروني المعتمد في Odoo</label>
+                    <input type="email" id="reg-email" placeholder="contractor@odoo.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-password"><i class="fa-solid fa-lock"></i> تعيين كلمة المرور</label>
+                    <input type="password" id="reg-password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-success btn-block"><i class="fa-solid fa-user-plus"></i> إنشاء الحساب وتفعيل الدخول</button>
+            </form>
+            <div class="auth-toggle">
+                <p>لديك حساب بالفعل؟ <a href="#" id="toggle-login">تسجيل الدخول</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── MAIN APP LAYOUT ─────────────────────────────────────────────────── -->
+    <div id="app-layout" class="app-container hidden">
+        
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <img src="/logo.png" alt="MERAAS Logo" class="sidebar-logo">
+                <div>
+                    <h3>ميراس</h3>
+                    <span>مراس للهندسة والإنشاءات</span>
+                </div>
+            </div>
+
+            <div class="user-profile-widget">
+                <div class="avatar"><i class="fa-solid fa-user-tie"></i></div>
+                <div class="info">
+                    <h4 id="user-display-name">جاري التحميل...</h4>
+                    <span id="user-role">متعهد</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-menu">
+                <a href="#" class="menu-item active" data-tab="dashboard">
+                    <i class="fa-solid fa-chart-pie"></i> لوحة المتابعة
+                </a>
+                <a href="#" class="menu-item" data-tab="work-orders">
+                    <i class="fa-solid fa-briefcase"></i> أوامر العمل
+                </a>
+                <a href="#" class="menu-item hidden" id="menu-admin" data-tab="admin-panel">
+                    <i class="fa-solid fa-users-gear"></i> إدارة الموظفين والربط
+                </a>
+                <a href="#" class="menu-item logout-btn" id="logout-button">
+                    <i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="odoo-status">
+                    <span class="status-dot online"></span>
+                    <span>اتصال آمن بـ Odoo 16</span>
+                </div>
+                <small class="company-tag">شركة MERAAS فقط</small>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            
+            <!-- TOP NAVBAR -->
+            <header class="top-nav">
+                <div class="nav-left" style="display: flex; align-items: center; gap: 20px;">
+                    <h2 id="page-title">لوحة المتابعة</h2>
+                    <div id="admin-contractor-selector-wrapper" class="hidden" style="display: flex; align-items: center; gap: 8px;">
+                        <label for="admin-contractor-select" style="font-weight: 600; font-size: 0.9rem; color: var(--text-secondary); white-space: nowrap;"><i class="fa-solid fa-handshake"></i> استعراض حساب:</label>
+                        <select id="admin-contractor-select" style="padding: 8px 12px; background: #ffffff; border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-family: inherit; font-size: 0.9rem; outline: none; min-width: 250px;">
+                            <option value="">اختر المتعهد...</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="nav-right">
+                    <span class="date-badge"><i class="fa-regular fa-calendar-days"></i> <span id="current-date">--/--/----</span></span>
+                    <button id="refresh-data" class="btn-icon" title="تحديث البيانات من أودو"><i class="fa-solid fa-arrows-rotate"></i></button>
+                </div>
+            </header>
+
+            <!-- ─── TAB: DASHBOARD ────────────────────────────────────────────── -->
+            <section id="tab-dashboard" class="tab-content">
+                <!-- Stat Cards Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card glass-panel border-left-blue">
+                        <div class="card-icon bg-light-blue"><i class="fa-solid fa-folder-open"></i></div>
+                        <div class="card-info">
+                            <h3>إجمالي أوامر العمل</h3>
+                            <span id="stat-total-orders" class="value">0</span>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-panel border-left-yellow">
+                        <div class="card-icon bg-light-yellow"><i class="fa-solid fa-file-signature"></i></div>
+                        <div class="card-info">
+                            <h3>أوامر مسودة</h3>
+                            <span id="stat-draft-orders" class="value">0</span>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-panel border-left-green">
+                        <div class="card-icon bg-light-green"><i class="fa-solid fa-file-circle-check"></i></div>
+                        <div class="card-info">
+                            <h3>أوامر مؤكدة</h3>
+                            <span id="stat-confirmed-orders" class="value">0</span>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-panel border-left-purple">
+                        <div class="card-icon bg-light-purple"><i class="fa-solid fa-clipboard-check"></i></div>
+                        <div class="card-info">
+                            <h3>أوامر معتمدة</h3>
+                            <span id="stat-completed-orders" class="value">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Financial Cards -->
+                <div class="financials-grid mt-4">
+                    <div class="fin-card total-value">
+                        <span>إجمالي القيمة المتعاقد عليها</span>
+                        <h2 id="stat-total-value">0.00 د.ل</h2>
+                        <i class="fa-solid fa-coins bg-icon"></i>
+                    </div>
+                    <div class="fin-card paid-value">
+                        <span>إجمالي القيم المدفوعة</span>
+                        <h2 id="stat-total-paid">0.00 د.ل</h2>
+                        <i class="fa-solid fa-money-bill-wave bg-icon"></i>
+                    </div>
+                    <div class="fin-card progress-value">
+                        <span>إجمالي تحت الإجراء بالمالية</span>
+                        <h2 id="stat-total-under">0.00 د.ل</h2>
+                        <i class="fa-solid fa-hourglass-half bg-icon"></i>
+                    </div>
+                    <div class="fin-card remaining-value">
+                        <span>القيمة المتبقية</span>
+                        <h2 id="stat-total-remaining">0.00 د.ل</h2>
+                        <i class="fa-solid fa-vault bg-icon"></i>
+                    </div>
+                </div>
+
+                <!-- Recent Activities & Notifications -->
+                <div class="dashboard-details-row mt-4">
+                    <div class="glass-panel w-100 p-4">
+                        <div class="panel-header mb-3">
+                            <h3><i class="fa-solid fa-bell text-warning"></i> التنبيهات والطلبات تحت الإجراء</h3>
+                            <span class="badge badge-info" id="alert-count-badge">0 تنبيهات</span>
+                        </div>
+                        <div class="alerts-list" id="dashboard-alerts">
+                            <!-- Populated dynamically -->
+                            <div class="alert-empty-state">
+                                <i class="fa-solid fa-circle-check text-success"></i>
+                                <p>لا توجد أي مبالغ معلقة أو فواتير متأخرة حالياً.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ─── TAB: WORK ORDERS ───────────────────────────────────────────── -->
+            <section id="tab-work-orders" class="tab-content hidden">
+                <!-- Filters & Controls Bar -->
+                <div class="filters-bar glass-panel p-3 mb-4">
+                    <div class="search-input-wrapper">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input type="text" id="search-box" placeholder="بحث برقم أمر، فاتورة، مشروع، مركز تكلفة...">
+                    </div>
+                    <div class="filters-row">
+                        <select id="filter-status">
+                            <option value="all">كل الحالات</option>
+                            <option value="مسودة">مسودة</option>
+                            <option value="مؤكد">مؤكد</option>
+                            <option value="معتمد">معتمد</option>
+                        </select>
+                        <select id="filter-project">
+                            <option value="all">المشروع (الكل)</option>
+                        </select>
+                        <select id="filter-cost-center">
+                            <option value="all">مركز التكلفة (الكل)</option>
+                        </select>
+                        <select id="sort-order">
+                            <option value="newest">ترتيب: آخر تحديث</option>
+                            <option value="highest-val">القيمة الأعلى</option>
+                            <option value="highest-rem">المتبقي الأكبر</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Financial Quick Tabs (All, Process, Paid, Remaining) -->
+                <div class="quick-tabs mb-4">
+                    <button class="tab-btn active" data-filter="all">الكل</button>
+                    <button class="tab-btn" data-filter="under_process">تحت الإجراء لدى المالية</button>
+                    <button class="tab-btn" data-filter="paid">المدفوعة بالكامل</button>
+                    <button class="tab-btn" data-filter="remaining">بها مبالغ متبقية</button>
+                </div>
+
+                <!-- Main Data Grid / Table -->
+                <div class="glass-panel table-responsive table-container">
+                    <table class="data-table" id="orders-table">
+                        <thead>
+                            <tr>
+                                <th>أمر العمل</th>
+                                <th>الحالة</th>
+                                <th>الموقع</th>
+                                <th>مركز التكلفة</th>
+                                <th>رابط الفاتورة</th>
+                                <th>رقم الفاتورة</th>
+                                <th>إجمالي أمر العمل</th>
+                                <th>تحت الإجراء بالمالية</th>
+                                <th>تاريخ تحت الإجراء</th>
+                                <th>القيم المدفوعة</th>
+                                <th>تاريخ الدفع</th>
+                                <th>المتبقي</th>
+                                <th>تفاصيل</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-table-body">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Mobile Cards Layout -->
+                <div class="mobile-cards-container" id="orders-cards-container">
+                    <!-- Populated dynamically -->
+                </div>
+            </section>
+
+            <!-- ─── TAB: ADMIN PANEL ──────────────────────────────────────────── -->
+            <section id="tab-admin-panel" class="tab-content hidden">
+                <div class="glass-panel p-4 mb-4">
+                    <h3 class="mb-3"><i class="fa-solid fa-user-plus text-primary"></i> ربط متعهد ببريده الإلكتروني</h3>
+                    <p class="text-secondary mb-4">اربط حساب مقاول مسجل في Odoo ببريد إلكتروني لكي يتمكن من تعيين كلمة مرور ومتابعة مستنداته فقط.</p>
+                    
+                    <form id="admin-map-form" class="admin-mapping-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="map-partner"><i class="fa-solid fa-handshake"></i> اختر المقاول (من Odoo)</label>
+                                <select id="map-partner" required>
+                                    <option value="">جاري تحميل الموردين من Odoo...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="map-email"><i class="fa-solid fa-envelope"></i> البريد الإلكتروني المخصص للدخول</label>
+                                <input type="email" id="map-email" placeholder="example@mail.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="map-password"><i class="fa-solid fa-key"></i> كلمة مرور افتراضية</label>
+                                <input type="text" id="map-password" value="123456" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-3"><i class="fa-solid fa-link"></i> تنفيذ الربط وإنشاء الحساب</button>
+                    </form>
+                </div>
+
+                <div class="glass-panel p-4">
+                    <h3 class="mb-3"><i class="fa-solid fa-table-list text-success"></i> المتعهدون النشطون والمرتبطون حالياً</h3>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>اسم المقاول في Odoo</th>
+                                    <th>رقم المعرف Odoo ID</th>
+                                    <th>بريد التواصل بـ Odoo</th>
+                                    <th>الهاتف</th>
+                                    <th>بريد تسجيل دخول المنصة</th>
+                                    <th>عدد أوامر العمل</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-contractors-body">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- ─── DETAILS MODAL DRAWER ──────────────────────────────────────────────── -->
+    <div id="details-modal" class="modal-overlay hidden">
+        <div class="modal-content glass-panel animate-slide-up">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-circle-info text-info"></i> تفاصيل أمر العمل والمدفوعات</h3>
+                <button class="close-modal-btn" id="close-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body" id="modal-body-content">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Core App JS -->
+    <script src="/js/app.js?v=1.7"></script>
+</body>
+</html>
